@@ -1,0 +1,5 @@
+lane :test do
+  connected_auth(
+    auth_key: 'world'
+  )
+end
