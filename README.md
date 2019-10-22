@@ -12,15 +12,11 @@ fastlane add_plugin connected
 
 ## About connected
 
-App Store Connect API Plugin
-
-**Note to author:** Add a more detailed description about this plugin here. If your plugin contains multiple actions, make sure to mention them here.
+A fastlane plugin which interacts with a 3rd part ruby sdk (https://github.com/kyledecot/app_store_connect) for the app store connect API
 
 ## Example
 
 Check out the [example `Fastfile`](fastlane/Fastfile) to see how to use this plugin. Try it by cloning the repo, running `fastlane install_plugins` and `bundle exec fastlane test`.
-
-**Note to author:** Please set up a sample project to make it easy for users to explore what your plugin does. Provide everything that is necessary to try out the plugin in this project (including a sample Xcode/Android project if necessary)
 
 ## Run tests for this plugin
 
@@ -31,6 +27,7 @@ rake
 ```
 
 To automatically fix many of the styling issues, use
+
 ```
 rubocop -a
 ```

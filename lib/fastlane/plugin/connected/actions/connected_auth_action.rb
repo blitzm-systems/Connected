@@ -1,12 +1,29 @@
 require 'fastlane/action'
 require_relative '../helper/connected_helper'
+require "app_store_connect"
 
 module Fastlane
   module Actions
     class ConnectedAuthAction < Action
+      def self.authenticate(api_key, key_id, issuer_id)
+        AppStoreConnect.config = {
+          issuer_id: issuer_id,
+          key_id: key_id,
+          private_key: api_key
+        }
+      end
+
       def self.run(params)
-        UI.message(params.values[:auth_key])
-        UI.message("The connected plugin is working!")
+        api_key = params.values[:api_key]
+        key_id = params.values[:key_id]
+        issuer_id = params.values[:issuer_id]
+
+        if api_key == '*'
+          UI.message("Successfully Authenticated with App Store Connect!")
+        end
+
+        self.authenticate(api_key, key_id, issuer_id)
+        # app_store_connect = AppStoreConnect::Client.new
       end
 
       def self.description
@@ -28,9 +45,19 @@ module Fastlane
 
       def self.available_options
         [
-          FastlaneCore::ConfigItem.new(key: :auth_key,
-                                  env_name: "CONNECT_AUTH_KEY",
-                               description: "You app store connect auth key",
+          FastlaneCore::ConfigItem.new(key: :api_key,
+                                  env_name: "CONNECT_API_KEY",
+                               description: "You app store connect api key",
+                                  optional: false,
+                                      type: String),
+          FastlaneCore::ConfigItem.new(key: :key_id,
+                                  env_name: "CONNECT_KEY_ID",
+                               description: "You app store connect key id",
+                                  optional: false,
+                                      type: String),
+          FastlaneCore::ConfigItem.new(key: :issuer_id,
+                                  env_name: "CONNECT_KEY_ISSUER_ID",
+                               description: "You app store connect issuer id key",
                                   optional: false,
                                       type: String)
         ]

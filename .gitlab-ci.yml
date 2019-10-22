@@ -1,0 +1,15 @@
+stages:
+  - tests
+
+.shared-env: &shared-env
+  LC_ALL: "en_US.UTF-8"
+  LANG: "en_US.UTF-8"
+
+auth_test:
+  image: ruby:2.5
+  stage: tests
+  variables:
+    <<: *shared-env
+  script:
+    - bundle
+    - rake
