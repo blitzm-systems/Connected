@@ -1,3 +1,9 @@
 lane :auth_test do
   connected_auth
 end
+lane :certs_test do
+  connected_auth
+  connected_certs(
+    app_id: 'com.rgbapps.citizenscience'
+  )
+end

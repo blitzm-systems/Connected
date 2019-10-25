@@ -12,3 +12,5 @@ coverage
 test-results
 
 .env
+
+.temp

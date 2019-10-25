@@ -23,7 +23,6 @@ module Fastlane
         end
 
         self.authenticate(api_key, key_id, issuer_id)
-        # app_store_connect = AppStoreConnect::Client.new
       end
 
       def self.description
