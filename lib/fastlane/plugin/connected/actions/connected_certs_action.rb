@@ -2,6 +2,7 @@ require 'fastlane/action'
 require_relative '../helper/connected_helper'
 require "app_store_connect"
 require "base64"
+require 'plist'
 
 module Fastlane
   module Actions
@@ -31,25 +32,39 @@ module Fastlane
         profiles = response['data']
                    .select { |d| bundle_id['id'] == d.dig('relationships', 'bundleId', 'data', 'id') }
 
-        # Create and install provisioning profile file
+        # Install all provisioning profiles and certificates
         profiles.each do |profile|
-          # Get file content
+          # Get provisioning profile file content
           profile_data = app_store_connect.profile(id: profile['id'])
           profile_name = profile_data['data']['attributes']['name']
           profile_content = Base64.decode64(profile_data['data']['attributes']['profileContent'])
 
-          # Save provisioning profile file
+          # Save provisioning profile to file
           directory = ".temp"
           Dir.mkdir(directory) unless File.exist?(directory)
-          file_path = File.join(directory, "#{profile['id']}.mobileprovision")
-          out_file = File.new(file_path, "w+")
+          profile_path = File.join(directory, "#{profile['id']}.mobileprovision")
+          out_file = File.new(profile_path, "w+")
           out_file.puts(profile_content)
           out_file.close
 
-          # Install the profiles
+          # Install the profile
           UI.message("Installing Provisioning Profile: #{profile_name}")
           destination = File.join(ENV['HOME'], "Library/MobileDevice/Provisioning Profiles", "#{profile['id']}.mobileprovision")
-          FileUtils.copy_file(file_path, destination)
+          FileUtils.copy_file(profile_path, destination)
+
+          # Get certificates from profile
+          readable_profile_path = "#{profile_path}.readable"
+          sh("security cms -D -i #{profile_path} > #{readable_profile_path}")
+          profile_plist = Plist.parse_xml(readable_profile_path)
+          certificates = profile_plist["DeveloperCertificates"]
+
+          # Install the certificates
+          certificates.each do |certificate|
+            certificate_path = File.join(directory, "cert.cer")
+            out_file = File.new(certificate_path, "w+")
+            out_file.puts(certificate.string)
+            out_file.close
+          end
         end
       end
 
