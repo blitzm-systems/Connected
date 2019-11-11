@@ -1,10 +1,12 @@
 require 'fastlane/action'
 require_relative '../helper/connected_helper'
 require "app_store_connect"
+require "base64"
 
 module Fastlane
   module Actions
     class ConnectedCertsAction < Action
+      
       def self.run(params)
         app_id = params.values[:app_id]
 
@@ -35,7 +37,7 @@ module Fastlane
           # Get file content
           profile_data = app_store_connect.profile(id: profile['id'])
           profile_name = profile_data['data']['attributes']['name']
-          profile_content = profile_data['data']['attributes']['profileContent']
+          profile_content = Base64.decode64(profile_data['data']['attributes']['profileContent'])
 
           # Save provisioning profile file
           directory = ".temp"
@@ -44,9 +46,11 @@ module Fastlane
           out_file = File.new(file_path, "w+")
           out_file.puts(profile_content)
           out_file.close
+          
+          # Install the profiles
           UI.message("Installing Provisioning Profile: #{profile_name}")
-
-          # TODO: install the profiles
+          destination = File.join(ENV['HOME'], "Library/MobileDevice/Provisioning Profiles",  "#{profile['id']}.mobileprovision")
+          FileUtils.copy_file(file_path, destination)
         end
       end
 
