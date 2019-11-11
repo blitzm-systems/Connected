@@ -59,12 +59,13 @@ module Fastlane
           certificates = profile_plist["DeveloperCertificates"]
 
           # Install the certificates
-          i = 0
+          i = 1
           certificates.each do |certificate|
             certificate_path = File.join(directory, "#{profile_name}_cert_#{i}.cer")
             out_file = File.new(certificate_path, "w+")
             out_file.puts(certificate.string)
             out_file.close
+            sh("security", "import", certificate_path, "-k", File.expand_path("~/Library/Keychains/login.keychain-db"))
             i += 1
           end
         end
