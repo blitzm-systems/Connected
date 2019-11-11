@@ -36,13 +36,13 @@ module Fastlane
         profiles.each do |profile|
           # Get provisioning profile file content
           profile_data = app_store_connect.profile(id: profile['id'])
-          profile_name = profile_data['data']['attributes']['name']
+          profile_name = profile_data['data']['attributes']['name'].gsub(/\s/, '')
           profile_content = Base64.decode64(profile_data['data']['attributes']['profileContent'])
 
           # Save provisioning profile to file
           directory = ".temp"
           Dir.mkdir(directory) unless File.exist?(directory)
-          profile_path = File.join(directory, "#{profile['id']}.mobileprovision")
+          profile_path = File.join(directory, "#{profile_name}_#{profile['id']}.mobileprovision")
           out_file = File.new(profile_path, "w+")
           out_file.puts(profile_content)
           out_file.close
@@ -59,11 +59,13 @@ module Fastlane
           certificates = profile_plist["DeveloperCertificates"]
 
           # Install the certificates
+          i = 0
           certificates.each do |certificate|
-            certificate_path = File.join(directory, "cert.cer")
+            certificate_path = File.join(directory, "#{profile_name}_cert_#{i}.cer")
             out_file = File.new(certificate_path, "w+")
             out_file.puts(certificate.string)
             out_file.close
+            i += 1
           end
         end
       end
