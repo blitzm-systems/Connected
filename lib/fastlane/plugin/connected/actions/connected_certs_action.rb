@@ -6,7 +6,6 @@ require "base64"
 module Fastlane
   module Actions
     class ConnectedCertsAction < Action
-      
       def self.run(params)
         app_id = params.values[:app_id]
 
@@ -46,10 +45,10 @@ module Fastlane
           out_file = File.new(file_path, "w+")
           out_file.puts(profile_content)
           out_file.close
-          
+
           # Install the profiles
           UI.message("Installing Provisioning Profile: #{profile_name}")
-          destination = File.join(ENV['HOME'], "Library/MobileDevice/Provisioning Profiles",  "#{profile['id']}.mobileprovision")
+          destination = File.join(ENV['HOME'], "Library/MobileDevice/Provisioning Profiles", "#{profile['id']}.mobileprovision")
           FileUtils.copy_file(file_path, destination)
         end
       end
