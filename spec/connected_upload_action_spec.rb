@@ -7,13 +7,11 @@ describe Fastlane::Actions::ConnectedAuthAction do
       )
 
       Fastlane::FastFile.new.parse("
-        lane :auth_test do
-          connected_auth(
-            api_key: '*',
-            key_id: '*',
-            issuer_id: '*'
+        lane :upload_test do
+          connected_upload(
+            ipa_file: '*',
           )
-        end").runner.execute(:auth_test)
+        end").runner.execute(:upload_test)
     end
   end
 end

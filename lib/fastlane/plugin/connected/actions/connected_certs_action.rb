@@ -7,11 +7,24 @@ require 'plist'
 module Fastlane
   module Actions
     class ConnectedCertsAction < Action
+      def self.install_cert(certificate_path, certificate_name)
+        sh("security", "import", certificate_path, "-k", File.expand_path("~/Library/Keychains/login.keychain-db"))
+        UI.success("Successfully installed Certificate: #{certificate_name}")
+      rescue StandardError => e
+        if e.message.include?("already exists in the keychain.")
+          UI.success("Certificate already exists in keychain: #{certificate_name}")
+        else
+          UI.message("Failed to install Certificate: #{certificate_name}")
+          raise e
+        end
+      end
+
       def self.run(params)
         app_id = params.values[:app_id]
 
         if app_id == '*'
-          UI.message("Successfully Downloaded Certificates!")
+          UI.success("Successfully Downloaded Certificates!")
+          return
         end
 
         app_store_connect = AppStoreConnect::Client.new
@@ -51,6 +64,7 @@ module Fastlane
           UI.message("Installing Provisioning Profile: #{profile_name}")
           destination = File.join(ENV['HOME'], "Library/MobileDevice/Provisioning Profiles", "#{profile['id']}.mobileprovision")
           FileUtils.copy_file(profile_path, destination)
+          UI.success("Succesfully Installed Profile: #{profile_name}")
 
           # Get certificates from profile
           readable_profile_path = "#{profile_path}.readable"
@@ -59,20 +73,22 @@ module Fastlane
           certificates = profile_plist["DeveloperCertificates"]
 
           # Install the certificates
+          UI.message("Installing Certificates for Provisioning Profile: #{profile_name}")
           i = 1
           certificates.each do |certificate|
-            certificate_path = File.join(directory, "#{profile_name}_cert_#{i}.cer")
+            certificate_name = "#{profile_name}_cert_#{i}.cer"
+            certificate_path = File.join(directory, certificate_name)
             out_file = File.new(certificate_path, "w+")
             out_file.puts(certificate.string)
             out_file.close
-            sh("security", "import", certificate_path, "-k", File.expand_path("~/Library/Keychains/login.keychain-db"))
+            self.install_cert(certificate_path, certificate_name)
             i += 1
           end
         end
       end
 
       def self.description
-        "App Store Connect API Plugin"
+        "App Store Connect API Certificates Module"
       end
 
       def self.authors
@@ -91,7 +107,7 @@ module Fastlane
       def self.available_options
         [
           FastlaneCore::ConfigItem.new(key: :app_id,
-                               description: "You app store connect api key",
+                               description: "You app's bundle identifier",
                                   optional: false,
                                       type: String)
         ]

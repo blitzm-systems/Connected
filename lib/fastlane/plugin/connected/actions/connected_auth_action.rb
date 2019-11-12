@@ -19,14 +19,16 @@ module Fastlane
         issuer_id = params.values[:issuer_id]
 
         if api_key == '*'
-          UI.message("Successfully Authenticated with App Store Connect!")
+          UI.success("Successfully Authenticated with App Store Connect!")
+          return
         end
 
         self.authenticate(api_key, key_id, issuer_id)
+        UI.success("Successfully Authenticated with App Store Connect!")
       end
 
       def self.description
-        "App Store Connect API Plugin"
+        "App Store Connect API Authentication Module"
       end
 
       def self.authors
