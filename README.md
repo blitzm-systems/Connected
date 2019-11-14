@@ -14,7 +14,9 @@ fastlane add_plugin connected
 
 ## About connected
 
-A fastlane plugin which interacts with a 3rd part ruby sdk (https://github.com/kyledecot/app_store_connect) for the app store connect API
+A fastlane plugin which interacts with a 3rd party ruby App Store Connect sdk (https://github.com/kyledecot/app_store_connect)
+
+As of November 14th 2019, Apple has not allowed users to upload builds via their official API.
 
 ## Example
 
