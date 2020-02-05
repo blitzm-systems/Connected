@@ -10,6 +10,9 @@ describe Fastlane::Actions::ConnectedAuthAction do
         lane :upload_test do
           connected_upload(
             ipa_file: '*',
+            api_key: '*',
+            key_id: '*',
+            issuer_id: '*'
           )
         end").runner.execute(:upload_test)
     end

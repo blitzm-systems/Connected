@@ -14,7 +14,7 @@ module Fastlane
         if e.message.include?("already exists in the keychain.")
           UI.success("Certificate already exists in keychain: #{certificate_name}")
         else
-          UI.message("Failed to install Certificate: #{certificate_name}")
+          UI.error("Failed to install Certificate: #{certificate_name}")
           raise e
         end
       end
@@ -37,6 +37,13 @@ module Fastlane
             bundle_ids: 'identifier'
           }
         )
+
+        unless response['errors'].nil?
+          response['errors'].each do |e|
+            UI.error("ERROR: #{e['title']} - #{e['detail']}")
+          end
+          raise "Connect Fastlane plugin couldn't fetch your certificates"
+        end
 
         bundle_id = response['included']
                     .select { |i| i['type'] == 'bundleIds' }
@@ -114,11 +121,7 @@ module Fastlane
       end
 
       def self.is_supported?(platform)
-        # Adjust this if your plugin only works for a particular platform (iOS vs. Android, for example)
-        # See: https://docs.fastlane.tools/advanced/#control-configuration-by-lane-and-by-platform
-        #
-        # [:ios, :mac, :android].include?(platform)
-        true
+        [:ios].include?(platform)
       end
     end
   end
