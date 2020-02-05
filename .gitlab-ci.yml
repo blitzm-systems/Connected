@@ -15,7 +15,7 @@ lint:
     - gem install rubocop -v 0.49.1
     - rubocop
 
-auth_test:
+test:
   image: ruby:2.5
   stage: tests
   variables:
