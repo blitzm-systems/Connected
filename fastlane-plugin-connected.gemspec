@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.email         = 'abgier@blitzm.com'
 
   spec.summary       = 'App Store Connect API Plugin'
-  # spec.homepage      = "https://github.com/<GITHUB_USERNAME>/fastlane-plugin-connected"
+  # TODO: spec.homepage      = "https://github.com/<GITHUB_USERNAME>/fastlane-plugin-connected"
   spec.license       = "MIT"
 
   spec.files         = Dir["lib/**/*"] + %w(README.md LICENSE)

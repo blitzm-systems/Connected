@@ -8,15 +8,28 @@
 
 This project is a [_fastlane_](https://github.com/fastlane/fastlane) plugin. To get started with `fastlane-plugin-connected`, add it to your project by running:
 
-```bash
+```shell
 fastlane add_plugin connected
+```
+
+I recommend setting up these env variable in your CI
+
+```shell
+# The content of your app store key .p8 file
+CONNECT_API_KEY=""
+
+# Your app store connect key id
+CONNECT_KEY_ID=""
+
+# Your app store connect key issuer id
+CONNECT_KEY_ISSUER_ID=""
 ```
 
 ## About connected
 
-A fastlane plugin which interacts with a 3rd party ruby App Store Connect sdk (https://github.com/kyledecot/app_store_connect)
+A fastlane plugin which interacts with a 3rd party ruby App Store Connect sdk (https://github.com/kyledecot/app_store_connect).
 
-As of November 14th 2019, Apple has not allowed users to upload builds via their official API.
+This plugin is used for all interactions with the app store connect api except for uploading apps. This plugin uses `altool` (an XCode command line tool) and your app store connect api key to upload apps.
 
 ## Example
 
