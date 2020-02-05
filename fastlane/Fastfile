@@ -2,16 +2,13 @@ lane :auth_test do
   connected_auth
 end
 lane :certs_test do
-  connected_auth
+  auth_test
   connected_certs(
     app_id: 'au.com.greenenergytrading.installer-app'
   )
 end
 lane :upload_test do
-  connected_auth
-  connected_certs(
-    app_id: 'au.com.greenenergytrading.installer-app'
-  )
+  certs_test
   connected_upload(
     ipa_file: './test_assets/test.ipa'
   )

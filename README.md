@@ -4,6 +4,28 @@
 
 [![fastlane Plugin Badge](https://rawcdn.githack.com/fastlane/fastlane/master/fastlane/assets/plugin-badge.svg)](https://rubygems.org/gems/fastlane-plugin-connected)
 
+## About connected
+
+A fastlane plugin which interacts with a 3rd party ruby App Store Connect sdk (https://github.com/kyledecot/app_store_connect).
+
+This plugin is used for all interactions with the app store connect api except for uploading apps. This plugin uses `altool` (an XCode command line tool) and your app store connect api key to upload apps.
+
+This plugin has [3 actions](lib/fastlane/plugin/connected/actions)
+
+- **connected_auth**
+
+  - Retrieves app store connect api session data
+
+- **connected_certs**
+
+  - Fetches all the provisioning profiles for a given app and installs their certificates
+  - Requires you to have create your provisioning profile for your app manually
+
+- **connected_upload**
+  - Uploads your app to TestFlight
+
+Please post requests for new features for this plugin as it is still very barebones.
+
 ## Getting Started
 
 This project is a [_fastlane_](https://github.com/fastlane/fastlane) plugin. To get started with `fastlane-plugin-connected`, add it to your project by running:
@@ -24,12 +46,6 @@ CONNECT_KEY_ID=""
 # Your app store connect key issuer id
 CONNECT_KEY_ISSUER_ID=""
 ```
-
-## About connected
-
-A fastlane plugin which interacts with a 3rd party ruby App Store Connect sdk (https://github.com/kyledecot/app_store_connect).
-
-This plugin is used for all interactions with the app store connect api except for uploading apps. This plugin uses `altool` (an XCode command line tool) and your app store connect api key to upload apps.
 
 ## Example
 
