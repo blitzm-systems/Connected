@@ -12,7 +12,6 @@ module Fastlane
           UI.success("Successfully Downloaded Certificates!")
           return
         end
-
         app_store_connect = AppStoreConnect::Client.new
 
         # Download profiles
@@ -21,7 +20,7 @@ module Fastlane
 
         # Install profiles and profile certificates
         profiles.each do |profile|
-          profile_name = profile['data']['attributes']['name'].gsub(/\s/, '')
+          profile_name = profile['name']
 
           UI.message("Installing Provisioning Profile: #{profile_name}")
           installed_profile = Helper::CertsHelper.install_provisioning_profile(app_store_connect, profile)

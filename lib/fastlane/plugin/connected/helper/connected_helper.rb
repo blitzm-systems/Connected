@@ -1,7 +1,6 @@
 require 'fastlane_core/ui/ui'
 require "base64"
 require 'plist'
-require 'open3'
 
 module Fastlane
   UI = FastlaneCore::UI unless Fastlane.const_defined?("UI")
@@ -25,7 +24,7 @@ module Fastlane
           response['errors'].each do |e|
             UI.error("ERROR: #{e['title']} - #{e['detail']}")
           end
-          raise "Connected Fastlane plugin couldn't fetch your certificates"
+          raise "Connected Fastlane plugin couldn't fetch your provisioning profiles"
         end
 
         bundle_id = response['included']
@@ -37,47 +36,51 @@ module Fastlane
 
         profiles = []
         profiles_shallow.each do |p|
+          # Get provisioning profile file content
           profile_data = app_store_connect.profile(id: p['id'])
-          profiles.push(profile_data)
+          profile_id = profile_data['data']['id']
+          profile_name = profile_data['data']['attributes']['name'].gsub(/\s/, '')
+          profile_content = Base64.decode64(profile_data['data']['attributes']['profileContent'])
+
+          # Save provisioning profile to file
+          directory = ".temp"
+          Dir.mkdir(directory) unless File.exist?(directory)
+          profile_path = File.join(directory, "#{profile_name}_#{profile_id}.mobileprovision")
+          out_file = File.new(profile_path, "w+")
+          out_file.puts(profile_content)
+          out_file.close
+
+          profiles.push({ 'id' => profile_id, 'name' => profile_name, 'path' => profile_path })
         end
 
         return profiles
       end
 
       def self.install_provisioning_profile(app_store_connect, profile)
-        # Get provisioning profile file content
-        profile_name = profile['data']['attributes']['name'].gsub(/\s/, '')
-        profile_content = Base64.decode64(profile['data']['attributes']['profileContent'])
-
-        # Save provisioning profile to file
-        directory = ".temp"
-        Dir.mkdir(directory) unless File.exist?(directory)
-        profile_path = File.join(directory, "#{profile_name}_#{profile['id']}.mobileprovision")
-        out_file = File.new(profile_path, "w+")
-        out_file.puts(profile_content)
-        out_file.close
-
-        # Install the profile
+        # Copy to XCode Provisioning Profiles Directory
         destination = File.join(ENV['HOME'], "Library/MobileDevice/Provisioning Profiles", "#{profile['id']}.mobileprovision")
-        FileUtils.copy_file(profile_path, destination)
+        FileUtils.copy_file(profile['path'], destination)
 
-        return { 'name' => profile_name, 'path' => profile_path }
+        return { 'id' => profile['id'], 'name' => profile['name'], 'path' => destination }
       end
 
       def self.install_certificates_from_provisioning_profile(app_store_connect, installed_profile)
         profile_name = installed_profile['name']
         profile_path = installed_profile['path']
 
-        # Get certificates from profile
+        # Decode profile
         readable_profile_path = "#{profile_path}.readable"
-        _stdout, stderr, _status = Open3.capture3("security cms -D -i #{profile_path} > #{readable_profile_path}")
-        if stderr.length > 0
-          UI.message("Failed to parse certificate")
-          raise stderr
-        end
+        decoded_profile = Fastlane::Actions.sh("security", "cms", "-D", "-i", profile_path)
+        out_file = File.new(readable_profile_path, "w+")
+        out_file.puts(decoded_profile)
+        out_file.close
+
         profile_plist = Plist.parse_xml(readable_profile_path)
+
+        # Get certificates from profile
         certificates = profile_plist["DeveloperCertificates"]
 
+        # Install certificates
         directory = ".temp"
         i = 1
         certificates.each do |certificate|
@@ -93,15 +96,14 @@ module Fastlane
 
       def self.install_certificate(certificate_path)
         certificate_name = File.basename(certificate_path)
-        _stdout, stderr, _status = Open3.capture3("security", "import", certificate_path, "-k", File.expand_path("~/Library/Keychains/login.keychain-db"))
-
-        if stderr.length > 0
-          if stderr.include?("already exists in the keychain.")
-            UI.message("Certificate already exists in keychain: #{certificate_name}")
-          else
-            UI.error("Failed to install Certificate: #{certificate_name}")
-            raise stderr
-          end
+        Fastlane::Actions.sh("security", "import", certificate_path, "-k", File.expand_path("~/Library/Keychains/login.keychain-db"))
+        UI.success("Successfully installed Certificate: #{certificate_name}")
+      rescue StandardError => e
+        if e.message.include?("already exists in the keychain.")
+          UI.message("Certificate already exists in keychain: #{certificate_name}")
+        else
+          UI.error("Failed to install Certificate: #{certificate_name}")
+          raise e
         end
       end
     end
@@ -121,11 +123,7 @@ module Fastlane
 
         # Start upload
         altool_path = "#{xcode_path}/Contents/Developer/usr/bin/altool"
-        _stdout, stderr, _status = Open3.capture3("#{altool_path} --upload-app --type ios --file #{ipa_file} --apiKey #{key_id} --apiIssuer #{issuer_id}")
-        if stderr.length > 0
-          UI.message("Failed to upload .ipa file")
-          raise stderr
-        end
+        Fastlane::Actions.sh(altool_path, "--upload-app", "--type", "ios", "--file", ipa_file, "--apiKey", key_id, "--apiIssuer", issuer_id)
       end
     end
   end
