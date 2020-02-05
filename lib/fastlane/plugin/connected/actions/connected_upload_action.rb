@@ -31,22 +31,16 @@ module Fastlane
           raise 'Connected Fastlane plugin failed to find your xcode installation'
         end
 
-        # Save auth key to file
-        connect_keys_dir = "#{ENV['HOME']}/.appstoreconnect"
-        Dir.mkdir(connect_keys_dir) unless File.exist?(connect_keys_dir)
-        key_dir = "#{connect_keys_dir}/private_keys"
-        Dir.mkdir(key_dir) unless File.exist?(key_dir)
+        # Upload app
+        Helper::UploadHelper.upload_app(
+          ipa_file,
+          api_key,
+          issuer_id,
+          key_id,
+          xcode_path
+        )
 
-        key_path = "#{key_dir}/AuthKey_#{key_id}.p8"
-        out_file = File.new(key_path, "w+")
-        out_file.puts(api_key)
-        out_file.close
-
-        # Start upload
-        altool_path = "#{xcode_path}/Contents/Developer/usr/bin/altool"
-        sh("#{altool_path} --upload-app --type ios --file #{ipa_file} --apiKey #{key_id} --apiIssuer #{issuer_id}")
-
-        UI.success("Successfully Uploaded IPA File!")
+        UI.success("Successfully Uploaded .ipa File!")
       end
 
       def self.description

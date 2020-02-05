@@ -5,14 +5,6 @@ require "app_store_connect"
 module Fastlane
   module Actions
     class ConnectedAuthAction < Action
-      def self.authenticate(api_key, key_id, issuer_id)
-        AppStoreConnect.config = {
-          issuer_id: issuer_id,
-          key_id: key_id,
-          private_key: api_key
-        }
-      end
-
       def self.run(params)
         api_key = params.values[:api_key]
         key_id = params.values[:key_id]
@@ -23,7 +15,12 @@ module Fastlane
           return
         end
 
-        self.authenticate(api_key, key_id, issuer_id)
+        AppStoreConnect.config = {
+          issuer_id: issuer_id,
+          key_id: key_id,
+          private_key: api_key
+        }
+
         UI.success("Successfully Authenticated with App Store Connect!")
       end
 
