@@ -31,6 +31,8 @@ publish:
   only:
     - /^(\d+\.\d+\.\d+)$/
   stage: publish
+  variables:
+    <<: *shared-env
   script:
     - bundle install
     - rake install
