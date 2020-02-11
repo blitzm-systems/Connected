@@ -6,6 +6,7 @@ stages:
 .shared-env: &shared-env
   LC_ALL: "en_US.UTF-8"
   LANG: "en_US.UTF-8"
+  VERSION: "${CI_COMMIT_TAG}"
 
 lint:
   image: ruby:2.5
@@ -31,7 +32,6 @@ publish:
     - /^(\d+\.\d+\.\d+)$/
   stage: publish
   script:
-    - export VERSION="${CI_COMMIT_TAG}"
     - bundle install
     - rake install
     - rake release
