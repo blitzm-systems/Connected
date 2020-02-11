@@ -42,4 +42,4 @@ publish:
     - chmod 0600 ~/.gem/credentials
     - echo "rubygems_api_key:" $GEM_HOST_API_KEY > ~/.gem/credentials
     - files=( pkg/*.gem )
-    - gem push "${files[0]}"
+    - gem push -k rubygems_api_key "${files[0]}"
