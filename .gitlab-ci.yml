@@ -25,3 +25,17 @@ tests:
   script:
     - bundle
     - rake
+
+publish:
+  image: ruby:2.5
+  only:
+    - /^(\d+\.\d+\.\d+)$/
+  stage: publish
+  variables:
+    <<: *shared-env
+  script:
+    - bundle install
+    - rake install
+    - rake build
+    - files=( pkg/*.gem )
+    - gem push "${files[0]}"
