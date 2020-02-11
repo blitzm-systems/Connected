@@ -1,10 +1,12 @@
 stages:
   - lint
   - tests
+  - publish
 
 .shared-env: &shared-env
   LC_ALL: "en_US.UTF-8"
   LANG: "en_US.UTF-8"
+  VERSION: "${CI_COMMIT_TAG}"
 
 lint:
   image: ruby:2.5
@@ -15,7 +17,7 @@ lint:
     - gem install rubocop -v 0.49.1
     - rubocop
 
-test:
+tests:
   image: ruby:2.5
   stage: tests
   variables:
@@ -23,3 +25,17 @@ test:
   script:
     - bundle
     - rake
+
+publish:
+  image: ruby:2.5
+  only:
+    - /^(\d+\.\d+\.\d+)$/
+  stage: publish
+  variables:
+    <<: *shared-env
+  script:
+    - git config --global user.email "$(git log -1 --pretty=format:'%an')"
+    - git config --global user.name "$(git log -1 --pretty=format:'%ae')"
+    - bundle install
+    - rake install
+    - rake release
