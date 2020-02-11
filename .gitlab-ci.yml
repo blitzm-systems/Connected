@@ -40,6 +40,6 @@ publish:
     - mkdir -p ~/.gem
     - touch ~/.gem/credentials
     - chmod 0600 ~/.gem/credentials
-    - echo "rubygems_api_key:" $GEM_HOST_API_KEY > ~/.gem/credentials
+    - printf -- "---\n:rubygems_api_key:" $GEM_HOST_API_KEY > ~/.gem/credentials
     - files=( pkg/*.gem )
     - gem push -k rubygems_api_key "${files[0]}"
