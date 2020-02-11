@@ -25,18 +25,3 @@ tests:
   script:
     - bundle
     - rake
-
-publish:
-  image: ruby:2.5
-  only:
-    - /^(\d+\.\d+\.\d+)$/
-  stage: publish
-  variables:
-    <<: *shared-env
-  script:
-    - git checkout -B "$CI_COMMIT_REF_NAME" "$CI_COMMIT_SHA"
-    - git config --global user.email "$(git log -1 --pretty=format:'%an')"
-    - git config --global user.name "$(git log -1 --pretty=format:'%ae')"
-    - bundle install
-    - rake install
-    - rake release
