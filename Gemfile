@@ -1,7 +1,5 @@
 source('https://rubygems.org')
 
-gem 'app_store_connect'
-
 gemspec
 
 plugins_path = File.join(File.dirname(__FILE__), 'fastlane', 'Pluginfile')
