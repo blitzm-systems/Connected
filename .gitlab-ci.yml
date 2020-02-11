@@ -39,6 +39,6 @@ publish:
     - rake build
     - touch ~/.gem/credentials
     - chmod 0600 ~/.gem/credentials
-    - echo "rubygems_api_key: $GEM_HOST_API_KEY" > ~/.gem/credentials
+    - echo "rubygems_api_key:" $GEM_HOST_API_KEY > ~/.gem/credentials
     - files=( pkg/*.gem )
     - gem push "${files[0]}"
