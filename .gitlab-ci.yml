@@ -34,8 +34,12 @@ publish:
   variables:
     <<: *shared-env
   script:
-    - git config --global user.email "$(git log -1 --pretty=format:'%an')"
-    - git config --global user.name "$(git log -1 --pretty=format:'%ae')"
     - bundle install
     - rake install
-    - rake release
+    - rake build
+    - mkdir -p ~/.gem
+    - touch ~/.gem/credentials
+    - chmod 0600 ~/.gem/credentials
+    - "printf -- '---\n:rubygems_api_key: '$GEM_HOST_API_KEY > ~/.gem/credentials"
+    - files=( pkg/*.gem )
+    - gem push -k rubygems "${files[0]}"
