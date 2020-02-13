@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.author        = 'Abgier Avraha'
   spec.email         = 'abgier@blitzm.com'
 
-  spec.summary       = 'App Store Connect API Plugin'
+  spec.summary       = 'Fastlane plugin that allows you to use your App Store Connect API key to download certificates and upload apps to TestFlight'
   spec.homepage      = "https://github.com/blitzm-systems/Connected"
   spec.license       = "MIT"
 
