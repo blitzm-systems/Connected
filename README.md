@@ -4,6 +4,8 @@
 
 [![fastlane Plugin Badge](https://rawcdn.githack.com/fastlane/fastlane/master/fastlane/assets/plugin-badge.svg)](https://rubygems.org/gems/fastlane-plugin-connected)
 
+- This project was built and test using ruby version 2.5.5 and includes an rbenv configuration file for contributors
+
 ## About connected
 
 A fastlane plugin which interacts with a 3rd party ruby App Store Connect sdk (https://github.com/kyledecot/app_store_connect).
@@ -14,15 +16,17 @@ This plugin has [3 actions](lib/fastlane/plugin/connected/actions)
 
 - **connected_auth**
 
-  - Retrieves app store connect api session data
+  - Initialises app store connect api session
+  - You MUST call execute this action before you can use any other actions
 
 - **connected_certs**
 
-  - Fetches all the provisioning profiles for a given app and installs their certificates
+  - Fetches all the provisioning profiles for a given app id and installs their certificates
   - Requires you to have create your provisioning profile for your app manually
 
 - **connected_upload**
-  - Uploads your app to TestFlight
+
+  - Uploads your `.ipa` file to TestFlight
 
 Please post requests for new features for this plugin as it is still very barebones.
 
@@ -49,7 +53,7 @@ CONNECT_KEY_ISSUER_ID=""
 
 ## Example
 
-Check out the [example `Fastfile`](fastlane/Fastfile) to see how to use this plugin. Try it by cloning the repo, running `fastlane install_plugins` and `bundle exec fastlane test`.
+[Check out the example `Fastfile` to see how to use this plugin](fastlane/Fastfile). Try it by cloning the repo, running `bundle install` and `bundle exec fastlane test`.
 
 ## Run tests for this plugin
 
