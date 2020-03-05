@@ -18,6 +18,7 @@ lint:
     - rubocop
 
 tests:
+  coverage: /\(\d+\.\d+%\) covered/
   image: ruby:2.5
   stage: tests
   variables:
