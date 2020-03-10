@@ -4,31 +4,43 @@
 
 [![fastlane Plugin Badge](https://rawcdn.githack.com/fastlane/fastlane/master/fastlane/assets/plugin-badge.svg)](https://rubygems.org/gems/fastlane-plugin-connected)
 
-- This project was built and test using ruby version 2.5.5 and includes an rbenv configuration file for contributors
-
 ## About connected
 
-A fastlane plugin which interacts with a 3rd party ruby App Store Connect sdk (https://github.com/kyledecot/app_store_connect).
-
-This plugin is used for all interactions with the app store connect api except for uploading apps. This plugin uses `altool` (an XCode command line tool) and your app store connect api key to upload apps.
+A fastlane plugin that uses your app store connect api key to upload apps to TestFlight and install provisioning profiles. This plugin interacts with a 3rd party ruby App Store Connect sdk (https://github.com/kyledecot/app_store_connect).
 
 This plugin has [3 actions](lib/fastlane/plugin/connected/actions)
 
 - **connected_auth**
 
   - Initialises app store connect api session
-  - You MUST call execute this action before you can use any other actions
+  - You MUST execute this action before you can use any other actions
+  - Example (requires CONNECT_API_KEY, CONNECT_KEY_ID and CONNECT_KEY_ISSUER_ID in your env variables)
+    ```ruby
+    connected_auth
+    ```
 
 - **connected_certs**
 
-  - Fetches all the provisioning profiles for a given app id and installs their certificates
-  - Requires you to have create your provisioning profile for your app manually
+  - Fetches all of the provisioning profiles for a given app id, installs them and their certificates
+  - Requires you to have created your provisioning profile for your app manually in the Apple Developer Portal
+  - Example
+    ```ruby
+    connected_certs(
+      app_id: 'com.company.app'
+    )
+    ```
 
 - **connected_upload**
 
   - Uploads your `.ipa` file to TestFlight
+  - Example if you used gym to compile your app
+    ```ruby
+    connected_upload(
+      ipa_file: lane_context[SharedValues::IPA_OUTPUT_PATH]
+    )
+    ```
 
-Please post requests for new features for this plugin as it is still very barebones.
+* Please post requests for new features for this plugin as it is still very barebones.
 
 ## Getting Started
 
@@ -38,17 +50,23 @@ This project is a [_fastlane_](https://github.com/fastlane/fastlane) plugin. To 
 fastlane add_plugin connected
 ```
 
-I recommend setting up these env variable in your CI
+You should setup these env variable in your CI machine. If you don't have these credentials, you can follow this documentation https://developer.apple.com/documentation/appstoreconnectapi/creating_api_keys_for_app_store_connect_api
 
 ```shell
 # The content of your app store key .p8 file
 CONNECT_API_KEY=""
+export CONNECT_API_KEY="-----BEGIN PRIVATE KEY-----
+5ED67D7564A5387EE418844C7A8E85ED67D7564A5387EE418844C7A8E85ED67D
+5ED67D7564A5387EE418844C7A8E85ED67D7564A5387EE418844C7A8E85ED67D
+5ED67D7564A5387EE418844C7A8E85ED67D7564A5387EE418844C7A8E85ED67D
+5ED67D75
+-----END PRIVATE KEY-----"
 
 # Your app store connect key id
-CONNECT_KEY_ID=""
+export CONNECT_KEY_ID="5ED67D7564"
 
 # Your app store connect key issuer id
-CONNECT_KEY_ISSUER_ID=""
+export CONNECT_KEY_ISSUER_ID="fj83hofh-fj83-fj83-f83j-fj83hofh92b5"
 ```
 
 ## Example
@@ -68,6 +86,8 @@ To automatically fix many of the styling issues, use
 ```
 rubocop -a
 ```
+
+- This project was built and test using ruby version 2.5.5 and includes an rbenv configuration file for contributors
 
 ## Issues and Feedback
 
